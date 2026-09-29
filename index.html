@@ -17,9 +17,8 @@
 <dialog id="intro-dialog">
     <p>
     <h2>This page is intended to play sounds. Please check your system's volume level</h2>
-    <p>Player 1 controls buttons and sliders with the mouse</p>
-    <p>Player 2 controls notes with the keyboard. Move selected note with arrow keys.
-        Press Space to change selected note</p>
+    <p>Player 1 controls the mouse</p>
+    <p>Player 2 controls the keyboard</p>
 
     <button id="intro-dialog-close">
         OK
@@ -42,30 +41,33 @@
         </div>
 
         <div class="control-group">
-            <label for="waveType">Waveform</label>
-            <select id="waveType">
-                <option value="sine">Sine</option>
-                <option value="square">Square</option>
-                <option value="triangle">Triangle</option>
-                <option value="sawtooth">Sawtooth</option>
-            </select>
+            <label>Waveform</label>
+            <div class="waveform-selector" id="waveSelector">
+                <button type="button" class="wave-btn active" data-value="sine">Sine</button>
+                <button type="button" class="wave-btn" data-value="square">Square</button>
+                <button type="button" class="wave-btn" data-value="triangle">Triangle</button>
+                <button type="button" class="wave-btn" data-value="sawtooth">Sawtooth</button>
+            </div>
         </div>
 
-        <div class="control-group">
-            <label for="speedSlider">Speed</label>
-            <input type="range" id="speedSlider" min="40" max="240" value="120">
-        </div>
+        <!-- Vertical Sliders Container -->
+        <div class="sliders-container">
+            <div class="control-group vertical-group">
+                <label for="speedSlider">Speed</label>
+                <input type="range" id="speedSlider" min="40" max="240" value="120" class="vertical-range">
+            </div>
 
-        <div class="control-group">
-            <label for="volumeSlider">Volume</label>
-            <input type="range" id="volumeSlider" min="-30" max="0" value="-6" step="1">
+            <div class="control-group vertical-group">
+                <label for="volumeSlider">Volume</label>
+                <input type="range" id="volumeSlider" min="-30" max="0" value="-6" step="1" class="vertical-range">
+            </div>
         </div>
 
         <div class="p2-info-box">
             <h3>Player 2 Controls</h3>
-            <p>⬆️ / ⬇️ Change Timing</p>
-            <p>⬅️ / ➡️ Change Pitch</p>
-            <p><strong>Space:</strong> Cycle Selected Note</p>
+            <p><strong>arrow keys</strong></p>
+            <p><strong>Spacebar</strong></p>
+            <p><strong>Backspace</strong></p>
             <p class="status-line"><strong>Status:</strong> <span id="p2-status">No active note</span></p>
         </div>
     </aside>
