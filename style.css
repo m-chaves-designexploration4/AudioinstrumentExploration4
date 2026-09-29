@@ -137,20 +137,21 @@ select, input[type="range"] {
 .note-ball {
     width: 20px;
     height: 20px;
-    border-radius: 50%;
+    border-radius: 10px;
     position: absolute;
-    background: radial-gradient(circle, #00f0ff 0%, #005566 100%);
+    background: linear-gradient(180deg, #00f0ff 0%, #005566 100%);
     border: 1px solid var(--colour-04);
     box-shadow: var(--glow-cyan);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
     transition: transform 0.1s ease, box-shadow 0.1s ease;
     cursor: pointer;
+    box-sizing:border-box;
 }
 
 .note-ball::after {
     content: '';
     position: absolute;
-    top: 50%;
+    top: 10%;
     left: 50%;
     width: 6px;
     height: 6px;

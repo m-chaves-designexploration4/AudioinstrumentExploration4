@@ -82,6 +82,9 @@ function createBall(xPercent, yPercent) {
     const xStep = Math.max(0, Math.min(Math.round(xPercent * (pitch_steps - 1)), pitch_steps - 1));
     const yStep = Math.max(0, Math.min(Math.round(yPercent * (time_steps - 1)), time_steps - 1));
 
+    //note created has a random duration from 1-4 beats
+    const durationBeats = Math.floor(Math.random() * 4) + 1;
+
     //storing ball coordinates as ratios (0.0 to 1.0)
     const noteObj = {
         element: ballElement,
@@ -89,6 +92,7 @@ function createBall(xPercent, yPercent) {
         yStep: yStep, // Integer 0 to 15 (Exact time beat)
         xRatio: xStep / (pitch_steps - 1), // Exact decimal ratio for CSS positioning
         yRatio: yStep / (time_steps - 1),
+        durationBeats: durationBeats,
         triggered: false
     };
 
@@ -100,7 +104,7 @@ function createBall(xPercent, yPercent) {
     selectNoteForP2(notes.length - 1);
 
     //play a preview note on creation
-    playPreviewSound(noteObj.xStep);
+    //playPreviewSound(noteObj.xStep);
 
     ballElement.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -116,6 +120,10 @@ function createBall(xPercent, yPercent) {
 function updateBallDOMPosition(noteObj) {
     noteObj.element.style.left = `${noteObj.xRatio * 100}%`;
     noteObj.element.style.top = `${noteObj.yRatio * 100}%`;
+
+    const stepHeightPercent = (1 / (time_steps - 1)) * 100;
+    noteObj.element.style.height = `calc(${noteObj.durationBeats * stepHeightPercent}% + 10px)`;
+
 }
 
 //calculate sound frequency using user 2 octave choice and ball x position
@@ -131,11 +139,13 @@ function calculateFrequency(xStep, octave) {
 }
 
 //Plays a short pitch preview sound based on horizontal position.
-function playPreviewSound(xStep) {
+function playPreviewSound(xStep, durationBeats = 1) {
     const pitchOffsetSlider = document.getElementById('pitchOffset');
     const baseOctave = pitchOffsetSlider ? parseInt(pitchOffsetSlider.value, 10) : 3;
     const previewFreq = calculateFrequency(xStep, baseOctave);
-    synth.triggerAttackRelease(previewFreq, "16n");
+
+    const durationNotation = `${durationBeats * 0.25}s`;
+    synth.triggerAttackRelease(previewFreq, durationNotation);
 }
 
 // Spawn button event listener
@@ -152,7 +162,7 @@ function selectNoteForP2(index) {
         activeP2Index = index;
         notes[activeP2Index].element.classList.add('active-selected');
         if (p2Status) {
-            p2Status.textContent = `Note #${activeP2Index + 1} of ${notes.length}`;
+            p2Status.textContent = `Note #${activeP2Index + 1} (${notes[activeP2Index].durationBeats} beats)`;
         }
     } else {
         activeP2Index = -1;
@@ -193,13 +203,13 @@ window.addEventListener('keydown', (e) => {
 
     if (notes.length === 0) return;
 
-    // BACKSPACE / DELETE: Remove selected note
+
     if (e.key === "Backspace" || e.key === "Delete") {
         deleteSelectedNote();
         return;
     }
 
-    // SPACEBAR: Cycle selection backwards infinitely
+
     if (e.key === " " || e.code === "Space") {
         if (activeP2Index !== -1) {
             let nextIndex = activeP2Index - 1;
@@ -213,7 +223,7 @@ window.addEventListener('keydown', (e) => {
         return;
     }
 
-    // arrow keys snap ball to grid lines
+    // arrow keys move ball along grid lines
     if (activeP2Index !== -1) {
         const activeNote = notes[activeP2Index];
         let moved = false;
@@ -238,7 +248,7 @@ window.addEventListener('keydown', (e) => {
 
         if (moved) {
             updateBallDOMPosition(activeNote);
-            playPreviewSound(activeNote.xStep);
+            playPreviewSound(activeNote.xStep, 1);
         }
     }
 });
@@ -309,12 +319,13 @@ function animate() {
                 try {
                     //calculate pitch and trigger sound
                     const notePitchHz = calculateFrequency(note.xStep, baseOctave);
-                    synth.triggerAttackRelease(notePitchHz, "8n");
+                    const durationTime = `${note.durationBeats * 0.25}s`;
+                    synth.triggerAttackRelease(notePitchHz, durationTime);
 
                     //visual feedback animation on note hit
-                    note.element.style.transform = 'translate(-50%, -50%) scale(1.6)';
+                    note.element.style.transform = 'translate(-50%, 0) scale(1.15)';
                     setTimeout(() => {
-                        note.element.style.transform = 'translate(-50%, -50%) scale(1.0)';
+                        note.element.style.transform = 'translate(-50%, 0) scale(1.0)';
                     }, 150);
 
                 } catch (err) {
